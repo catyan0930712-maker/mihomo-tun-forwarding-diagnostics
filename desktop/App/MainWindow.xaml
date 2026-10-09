@@ -1,0 +1,144 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TUN Assist" Width="1060" Height="820" MinWidth="800" MinHeight="600"
+        WindowStartupLocation="CenterScreen" Background="White" FontFamily="Segoe UI" FontSize="14" UseLayoutRounding="True">
+  <Window.Resources>
+    <SolidColorBrush x:Key="Ink" Color="#213449"/>
+    <SolidColorBrush x:Key="Muted" Color="#738397"/>
+    <SolidColorBrush x:Key="Accent" Color="#267CC2"/>
+    <Style TargetType="TextBlock"><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="TextWrapping" Value="Wrap"/></Style>
+    <Style x:Key="MutedText" TargetType="TextBlock"><Setter Property="Foreground" Value="{StaticResource Muted}"/><Setter Property="TextWrapping" Value="Wrap"/><Setter Property="LineHeight" Value="22"/></Style>
+    <Style TargetType="Button">
+      <Setter Property="Cursor" Value="Hand"/><Setter Property="FontSize" Value="14"/>
+      <Setter Property="Padding" Value="18,11"/><Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Foreground" Value="{StaticResource Ink}"/>
+      <Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#DCE7F0"/><Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="11" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+          <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ButtonBorder" Property="Opacity" Value="0.86"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="ButtonBorder" Property="BorderBrush" Value="#6AABE0"/><Setter TargetName="ButtonBorder" Property="BorderThickness" Value="2"/></Trigger>
+          <Trigger Property="IsEnabled" Value="False"><Setter TargetName="ButtonBorder" Property="Opacity" Value="0.42"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style x:Key="Primary" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="Background" Value="{StaticResource Accent}"/><Setter Property="Foreground" Value="White"/><Setter Property="BorderBrush" Value="{StaticResource Accent}"/></Style>
+    <Style x:Key="Nav" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="Background" Value="White"/><Setter Property="Foreground" Value="#748498"/><Setter Property="BorderThickness" Value="0"/><Setter Property="HorizontalContentAlignment" Value="Left"/><Setter Property="Margin" Value="0,3"/><Setter Property="Padding" Value="16,13"/><Setter Property="ContentTemplate"><Setter.Value><DataTemplate><TextBlock Text="{Binding}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" TextWrapping="Wrap" MaxWidth="132"/></DataTemplate></Setter.Value></Setter></Style>
+    <Style x:Key="Card" TargetType="Border"><Setter Property="Background" Value="White"/><Setter Property="CornerRadius" Value="16"/><Setter Property="BorderBrush" Value="#E6EDF4"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Padding" Value="19"/></Style>
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Padding" Value="13,10"/><Setter Property="Foreground" Value="{StaticResource Ink}"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBoxItem"><Border x:Name="ItemSurface" Background="Transparent" CornerRadius="8" Padding="{TemplateBinding Padding}"><ContentPresenter/></Border><ControlTemplate.Triggers><Trigger Property="IsHighlighted" Value="True"><Setter TargetName="ItemSurface" Property="Background" Value="#F2F8FE"/></Trigger><Trigger Property="IsSelected" Value="True"><Setter TargetName="ItemSurface" Property="Background" Value="#EAF4FF"/><Setter Property="Foreground" Value="#267CC2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style TargetType="ComboBox">
+      <Setter Property="Background" Value="White"/><Setter Property="BorderBrush" Value="#DBE7F1"/><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="MinHeight" Value="42"/><Setter Property="FontSize" Value="14"/><Setter Property="MaxDropDownHeight" Value="240"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox"><Grid>
+        <ToggleButton x:Name="PickerToggle" Focusable="False" ClickMode="Press" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"><ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="11"><Grid><Path Data="M 0,0 L 4,4 L 8,0" Stroke="#7E97AF" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,17,0"/></Grid></Border></ControlTemplate></ToggleButton.Template></ToggleButton>
+        <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="14,0,42,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+        <Popup x:Name="PART_Popup" Placement="Bottom" AllowsTransparency="True" Focusable="False" IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Fade"><Border Background="White" BorderBrush="#DDE8F2" BorderThickness="1" CornerRadius="11" Padding="5" Margin="0,5,0,8" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"><Border.Effect><DropShadowEffect Color="#9DB3C9" BlurRadius="12" ShadowDepth="2" Opacity="0.12"/></Border.Effect><ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}" CanContentScroll="True" VerticalScrollBarVisibility="Auto"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/></ScrollViewer></Border></Popup>
+      </Grid><ControlTemplate.Triggers><Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="PickerToggle" Property="BorderBrush" Value="#73AFE1"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="PickerToggle" Property="BorderBrush" Value="#A7CCE9"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.48"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+    </Style>
+    <Style TargetType="ScrollBar">
+      <Setter Property="Width" Value="8"/><Setter Property="Margin" Value="6,2,0,2"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar"><Grid Background="Transparent"><Track x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="True"><Track.DecreaseRepeatButton><RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/></Track.DecreaseRepeatButton><Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border x:Name="ThumbSurface" Width="5" HorizontalAlignment="Center" Background="#D4E0EC" CornerRadius="3"/><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="ThumbSurface" Property="Background" Value="#AFCAE1"/></Trigger><Trigger Property="IsDragging" Value="True"><Setter TargetName="ThumbSurface" Property="Background" Value="#80B2DB"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Thumb.Template></Thumb></Track.Thumb><Track.IncreaseRepeatButton><RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/></Track.IncreaseRepeatButton></Track></Grid></ControlTemplate></Setter.Value></Setter>
+    </Style>
+  </Window.Resources>
+  <Grid Background="White">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="204"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+    <Border Background="White" BorderBrush="#EDF2F7" BorderThickness="0,0,1,0">
+      <Grid Margin="20,28,20,24">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <StackPanel Margin="10,0,0,36">
+          <Image x:Name="BrandIcon" Width="40" Height="40" HorizontalAlignment="Left" Margin="0,0,0,13"/>
+          <TextBlock Text="TUN Assist" FontSize="23" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/>
+          <TextBlock Text="A LITTLE HELP FOR TUN" FontSize="9" Foreground="#92A4B7" Margin="0,8,0,0"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1">
+          <Button x:Name="DashboardNav" Content="Overview" Style="{StaticResource Nav}"/>
+          <Button x:Name="GuideNav" Content="How it works" Style="{StaticResource Nav}"/>
+          <Button x:Name="ActivityNav" Content="Activity" Style="{StaticResource Nav}"/>
+          <Button x:Name="AboutNav" Content="About" Style="{StaticResource Nav}"/>
+          <Border BorderBrush="#EDF2F7" BorderThickness="0,1,0,0" Margin="12,14,12,10"/>
+          <Button x:Name="LanguageNav" Content="Language" Style="{StaticResource Nav}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Margin="10,0,0,0">
+          <Border Background="#F0F8F4" CornerRadius="7" Padding="9,5" HorizontalAlignment="Left"><TextBlock x:Name="ModeBadge" Text="READ-ONLY BY DEFAULT" Foreground="#659B81" FontSize="9"/></Border>
+          <TextBlock Text="0.3.0-preview.3" Foreground="#91A2B5" FontSize="11" Margin="0,14,0,4"/>
+          <TextBlock Text="Your data stays on this device." Foreground="#91A2B5" FontSize="11"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+    <Grid Grid.Column="1" Margin="32,28,32,22">
+      <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+      <Grid Margin="0,0,0,22">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+        <StackPanel><TextBlock Text="WINDOWS / IPV4 FORWARDING" FontSize="10" Foreground="{StaticResource Accent}" FontWeight="SemiBold"/>
+          <TextBlock x:Name="PageTitle" Text="A clearer view of TUN issues." FontSize="29" FontWeight="SemiBold" Margin="0,8,0,5"/>
+          <TextBlock x:Name="PageSubtitle" Text="Inspect the setting. Make a considered change. Keep a way back." Style="{StaticResource MutedText}"/>
+        </StackPanel>
+        <Button x:Name="RefreshButton" Grid.Column="1" Content="Refresh status" VerticalAlignment="Top" Margin="18,12,0,0"/>
+      </Grid>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid>
+          <StackPanel x:Name="DashboardPage">
+            <Border x:Name="DemoBanner" Visibility="Collapsed" Background="#E5F0FB" CornerRadius="9" Padding="14" Margin="0,0,0,16"><TextBlock Text="DEMO · Sample data only. Controls simulate changes; no Windows settings are read or changed." Foreground="#245478" FontSize="12"/></Border>
+            <Border x:Name="ResultBanner" Visibility="Collapsed" Background="#FBE9E5" CornerRadius="9" Padding="14" Margin="0,0,0,16"><TextBlock x:Name="ResultText" Foreground="#9D3B2C" FontSize="12" LineHeight="21"/></Border>
+            <Grid Margin="0,0,0,14"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+              <StackPanel><TextBlock Text="PHYSICAL ADAPTER" FontSize="10" Foreground="{StaticResource Muted}" Margin="0,0,0,7"/>
+                <ComboBox x:Name="AdapterPicker" DisplayMemberPath="DisplayName"/>
+              </StackPanel>
+              <TextBlock x:Name="LastChecked" Grid.Column="1" Text="Not checked yet" FontSize="11" Foreground="{StaticResource Muted}" VerticalAlignment="Bottom" Margin="16,0,0,10"/>
+            </Grid>
+            <TextBlock x:Name="AdapterRole" Text="Windows setting for the selected adapter. This is not TUN on/off." Foreground="{StaticResource Muted}" FontSize="12" Margin="0,0,0,12"/>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14">
+              <StackPanel><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel>
+                  <TextBlock Text="IPv4 packet forwarding" FontSize="16" FontWeight="SemiBold"/>
+                  <TextBlock x:Name="ForwardingValue" Text="Unknown" FontSize="34" FontWeight="SemiBold" Margin="0,7,0,5"/>
+                  <TextBlock x:Name="StateExplanation" Text="Refresh to read the selected adapter's current Windows setting." Style="{StaticResource MutedText}" FontSize="12" LineHeight="20"/>
+                  <TextBlock x:Name="AdapterCaption" Text="No physical adapter selected" FontSize="11" Foreground="{StaticResource Muted}" Margin="0,9,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="24,8,0,0" VerticalAlignment="Top">
+                  <Button x:Name="ForwardingSwitch" Width="76" Height="40" Padding="0" IsEnabled="False" ToolTip="Change only this adapter's IPv4 packet forwarding. This is not the Clash TUN switch." AutomationProperties.Name="IPv4 packet forwarding switch">
+                    <Button.Template><ControlTemplate TargetType="Button"><Border x:Name="SwitchTrack" Background="{TemplateBinding Background}" CornerRadius="20" Padding="4"><Ellipse x:Name="SwitchKnob" Fill="White" Width="30" Height="30" HorizontalAlignment="Left"/></Border><ControlTemplate.Triggers><Trigger Property="Tag" Value="Enabled"><Setter TargetName="SwitchKnob" Property="HorizontalAlignment" Value="Right"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter TargetName="SwitchTrack" Property="Opacity" Value="0.45"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="SwitchTrack" Property="BorderBrush" Value="#62ADE2"/><Setter TargetName="SwitchTrack" Property="BorderThickness" Value="2"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Button.Template>
+                  </Button>
+                  <TextBlock x:Name="SwitchCaption" Text="NOT TUN ON/OFF" FontSize="9" Foreground="{StaticResource Muted}" HorizontalAlignment="Center" Margin="0,9,0,0"/>
+                </StackPanel>
+              </Grid>
+              <Border BorderBrush="#EDF2F7" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,15,0,0"><StackPanel>
+                <TextBlock x:Name="ActionTitle" Text="Start with a read-only check." FontSize="15" FontWeight="SemiBold"/>
+                <TextBlock x:Name="ActionExplanation" Text="This tool checks a possible forwarding-related TUN issue. It does not run or configure Clash." Style="{StaticResource MutedText}" FontSize="12" LineHeight="20" Margin="0,5,0,12"/>
+                <WrapPanel><Button x:Name="FixButton" Content="Apply candidate workaround" Style="{StaticResource Primary}" Margin="0,0,10,3" IsEnabled="False"/><Button x:Name="RestoreButton" Content="Restore original setting" Margin="0,0,0,3" IsEnabled="False"/></WrapPanel>
+              </StackPanel></Border></StackPanel>
+            </Border>
+            <Grid Margin="0,0,0,14"><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+              <Border Style="{StaticResource Card}"><StackPanel><TextBlock Text="SHARING PROTECTION" FontSize="10" Foreground="{StaticResource Muted}"/><TextBlock x:Name="SafetyValue" Text="Not checked" FontSize="19" FontWeight="SemiBold" Margin="0,9,0,7"/><TextBlock x:Name="SafetyExplanation" Text="ICS, hotspot, NAT and routing checks must be complete before a network change." Style="{StaticResource MutedText}" FontSize="12"/></StackPanel></Border>
+              <Border Grid.Column="2" Style="{StaticResource Card}"><StackPanel><TextBlock Text="RECOVERY SNAPSHOT" FontSize="10" Foreground="{StaticResource Muted}"/><TextBlock x:Name="SnapshotValue" Text="Unknown" FontSize="19" FontWeight="SemiBold" Margin="0,9,0,7"/><TextBlock x:Name="SnapshotExplanation" Text="The original setting is saved before the tool changes it." Style="{StaticResource MutedText}" FontSize="12"/></StackPanel></Border>
+            </Grid>
+            <Expander x:Name="InspectionDetails" Header="Adapter details &amp; inspection notes" Margin="2,1,2,15" Foreground="{StaticResource Muted}"><TextBlock x:Name="DetailText" Text="No inspection yet." FontFamily="Consolas" FontSize="12" LineHeight="21" Margin="0,12,0,0" TextWrapping="Wrap"/></Expander>
+            <Border Background="#F5F9FD" CornerRadius="9" Padding="15"><TextBlock Text="A forwarding state is not a TUN health test. Verify actual websites and app traffic in Clash after a change." Foreground="#72879C" FontSize="12"/></Border>
+          </StackPanel>
+          <StackPanel x:Name="GuidePage" Visibility="Collapsed">
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14"><StackPanel><TextBlock Text="What this tool does" FontSize="22" FontWeight="SemiBold"/><TextBlock Text="TUN Assist inspects IPv4 packet forwarding on your physical Windows network adapter. When a suitable case is identified, it can disable forwarding with your confirmation, save the original state, and restore that saved state later." Style="{StaticResource MutedText}" Margin="0,13,0,8"/><TextBlock Text="It complements Mihomo / Clash Verge Rev. Keep your subscriptions, nodes, DNS, routing rules and TUN stack in Clash. TUN Assist does not change those settings or control the Clash TUN switch." Style="{StaticResource MutedText}"/></StackPanel></Border>
+            <Border Style="{StaticResource Card}" Margin="0,0,0,14"><StackPanel><TextBlock Text="How it started" FontSize="22" FontWeight="SemiBold"/><TextBlock Text="One Windows host could browse through the system proxy, while TUN connections timed out. DNS overrides, stack changes and a forced WLAN binding did not consistently resolve it. The user found WLAN forwarding enabled and manually disabled it; connectivity returned. Automatic outbound selection and Mips then worked too." Style="{StaticResource MutedText}" Margin="0,13,0,8"/><TextBlock Text="That single observation motivated a focused, reversible tool. It does not establish a universal TUN fix or a performance gain. The desktop preview still needs user testing on a live network." Style="{StaticResource MutedText}"/></StackPanel></Border>
+            <Border Style="{StaticResource Card}"><StackPanel><TextBlock Text="A careful three-step workflow" FontSize="22" FontWeight="SemiBold"/>
+              <TextBlock Text="01   INSPECT" Foreground="{StaticResource Accent}" FontWeight="SemiBold" Margin="0,21,0,7"/><TextBlock Text="Open the EXE normally. Refresh status, select the physical adapter, and review forwarding, sharing protection and recovery availability. Compare actual system-proxy and TUN access in Clash." Style="{StaticResource MutedText}"/>
+              <TextBlock Text="02   CHANGE, IF APPROPRIATE" Foreground="{StaticResource Accent}" FontWeight="SemiBold" Margin="0,20,0,7"/><TextBlock Text="Only if forwarding is Enabled, the checks permit it, and your host does not serve a hotspot or another subnet: close this app, right-click the EXE and choose Run as administrator. Turn TUN off in Clash, refresh, and select Apply candidate workaround. Read the confirmation before typing the required words." Style="{StaticResource MutedText}"/>
+              <TextBlock Text="03   VERIFY OR RESTORE" Foreground="{StaticResource Accent}" FontWeight="SemiBold" Margin="0,20,0,7"/><TextBlock Text="Restart the Mihomo core in Clash and test real sites and apps with your intended TUN configuration. To undo the change, use Restore original setting with the same adapter. A valid saved snapshot is required; the tool never guesses an earlier state." Style="{StaticResource MutedText}"/>
+              <TextBlock Text="If forwarding is already Disabled and no snapshot exists, the app leaves it alone. Unknown or protected topology blocks changes. Reboot persistence is not guaranteed; a failed rollback needs local review." Foreground="#8F6337" Margin="0,20,0,0" LineHeight="22"/>
+            </StackPanel></Border>
+          </StackPanel>
+          <StackPanel x:Name="LanguagePage" Visibility="Collapsed"><Border Style="{StaticResource Card}"><StackPanel>
+            <TextBlock Text="Choose a language" FontSize="22" FontWeight="SemiBold"/>
+            <TextBlock x:Name="LanguagePersistence" Text="Applies immediately and is remembered on this device." Style="{StaticResource MutedText}" Margin="0,12,0,22"/>
+            <ListBox x:Name="LanguagePicker" DisplayMemberPath="NativeName" BorderThickness="0" Background="White" FontSize="17" Padding="2" MinHeight="305"><ListBox.Resources><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="16,12"/><Setter Property="Margin" Value="0,2"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem"><Border x:Name="LanguageSurface" Background="White" CornerRadius="10" Padding="{TemplateBinding Padding}"><ContentPresenter/></Border><ControlTemplate.Triggers><Trigger Property="IsSelected" Value="True"><Setter TargetName="LanguageSurface" Property="Background" Value="#EDF6FF"/><Setter Property="Foreground" Value="#267CC2"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="LanguageSurface" Property="BorderBrush" Value="#B4D5F0"/><Setter TargetName="LanguageSurface" Property="BorderThickness" Value="1"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style></ListBox.Resources></ListBox>
+            <TextBlock Text="Original system and engine messages stay as reported. Adapter names, identifiers and confirmation words are never translated." Style="{StaticResource MutedText}" Margin="0,24,0,0"/>
+          </StackPanel></Border></StackPanel>
+          <StackPanel x:Name="ActivityPage" Visibility="Collapsed"><Border Style="{StaticResource Card}"><StackPanel><TextBlock Text="This session, on this device" FontSize="22" FontWeight="SemiBold"/><TextBlock Text="No activity is uploaded or saved automatically. State changes below report Windows settings, not proof of restored TUN connectivity." Style="{StaticResource MutedText}" Margin="0,12,0,20"/><TextBox x:Name="ActivityText" IsReadOnly="True" BorderThickness="0" Background="Transparent" FontFamily="Consolas" FontSize="12" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MinHeight="400"/><Button x:Name="CopyActivityButton" Content="Copy session notes" HorizontalAlignment="Left" Margin="0,18,0,0"/></StackPanel></Border></StackPanel>
+          <StackPanel x:Name="AboutPage" Visibility="Collapsed"><Border Style="{StaticResource Card}"><StackPanel><TextBlock Text="Small scope. Visible state. A way back." FontSize="25" FontWeight="SemiBold"/><TextBlock Text="TUN Assist 0.3.0-preview.3" Foreground="{StaticResource Accent}" FontSize="16" Margin="0,18,0,12"/><TextBlock Text="A portable, unofficial community tool for a possible Windows forwarding-related TUN failure. This is a public pre-release." Style="{StaticResource MutedText}" Margin="0,0,0,14"/><TextBlock Text="All functionality and the guide are inside this EXE. It uses Windows' .NET Framework and PowerShell. There is no installer, updater, background service, telemetry, downloaded code, or external UI runtime." Style="{StaticResource MutedText}" Margin="0,0,0,14"/><TextBlock Text="Network scope: one physical adapter's IPv4 packet forwarding in ActiveStore. Original values are kept in protected machine-scoped snapshots. IPv4/IPv6 enablement, DNS, firewall, routes, subscriptions and Clash settings remain outside this tool's controls." Style="{StaticResource MutedText}" Margin="0,0,0,14"/><TextBlock Text="The safety core has 109 passing mock scenarios per tested PowerShell engine. The desktop UI and bridge have their own checks. Real Windows Fix/Restore and TUN connectivity still require user validation. A passing check is not a universal repair guarantee." Style="{StaticResource MutedText}" Margin="0,0,0,14"/><TextBlock Text="Unsigned pre-release · MIT License · Unaffiliated with Mihomo, Clash Verge Rev and Microsoft." Style="{StaticResource MutedText}" Margin="0,0,0,22"/><Button x:Name="LicenseButton" Content="View license &amp; notices" HorizontalAlignment="Left"/></StackPanel></Border></StackPanel>
+        </Grid>
+      </ScrollViewer>
+      <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="#EDF2F7" Margin="0,18,0,0" Padding="0,12,0,0"><TextBlock x:Name="FooterStatus" Text="Ready · No network settings changed" FontSize="11" Foreground="{StaticResource Muted}"/></Border>
+    </Grid>
+  </Grid>
+</Window>

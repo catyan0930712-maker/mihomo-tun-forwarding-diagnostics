@@ -1,0 +1,39 @@
+name: PowerShell safety tests (mock network only)
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows-powershell-51:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse all PowerShell sources
+        shell: powershell
+        run: .\tests\ParsePowerShell.ps1
+      - name: Run isolated backend tests
+        shell: powershell
+        run: .\tests\Run-MockTests.ps1
+      - name: Run isolated desktop bridge tests
+        shell: powershell
+        run: .\desktop\tests\Bridge.Tests.ps1
+      - name: Verify release manifest
+        shell: powershell
+        run: .\tests\VerifyManifest.ps1
+  powershell-7:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse all PowerShell sources
+        shell: pwsh
+        run: .\tests\ParsePowerShell.ps1
+      - name: Run isolated backend tests
+        shell: pwsh
+        run: .\tests\Run-MockTests.ps1
+      - name: Run isolated desktop bridge tests
+        shell: pwsh
+        run: .\desktop\tests\Bridge.Tests.ps1
+      - name: Verify release manifest
+        shell: pwsh
+        run: .\tests\VerifyManifest.ps1

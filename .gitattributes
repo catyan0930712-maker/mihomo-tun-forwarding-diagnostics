@@ -1,0 +1,2 @@
+# Preserve release bytes so checkout line-ending conversion cannot change SHA-256.
+* -text

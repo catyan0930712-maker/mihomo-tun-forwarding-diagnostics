@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 256 256" role="img" aria-label="TUN Assist connected link icon">
+  <rect x="16" y="16" width="224" height="224" rx="52" fill="#FFFFFF" stroke="#E4F1FB" stroke-width="2"/>
+  <g transform="rotate(-35 128 128)" fill="none" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#389FE7">
+      <path d="M112 96H88A32 32 0 0 0 88 160H112"/>
+      <path d="M144 96H168A32 32 0 0 1 168 160H144"/>
+    </g>
+    <path d="M104 128H152" stroke="#65CDBA"/>
+  </g>
+</svg>

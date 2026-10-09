@@ -1,0 +1,68 @@
+name: Desktop preview (offline checks only)
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      render_demo:
+        description: Render a sample-data PNG in runner temporary storage
+        required: false
+        default: false
+        type: boolean
+permissions:
+  contents: read
+jobs:
+  offline-desktop-preview:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check localization resources with Windows PowerShell 5.1
+        shell: powershell
+        run: .\desktop\tests\Localization.Tests.ps1
+      - name: Check localization resources with PowerShell 7
+        shell: pwsh
+        run: .\desktop\tests\Localization.Tests.ps1
+      - name: Build the local preview in runner temporary storage
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $outputDirectory = Join-Path $env:RUNNER_TEMP 'tunassist-preview\output'
+          $intermediateDirectory = Join-Path $env:RUNNER_TEMP 'tunassist-preview\intermediate'
+          .\desktop\Build.ps1 -OutputDirectory $outputDirectory -IntermediateDirectory $intermediateDirectory
+      - name: Run compiled EXE isolated self-tests
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $previewRoot = Join-Path $env:RUNNER_TEMP 'tunassist-preview'
+          $exePath = Join-Path $previewRoot 'output\TunAssist.exe'
+          $logPath = Join-Path $previewRoot 'self-test.log'
+          $process = Start-Process -FilePath $exePath -ArgumentList ('--self-test "{0}"' -f $logPath) -WindowStyle Hidden -PassThru -Wait
+          if ($process.ExitCode -ne 0) {
+              $errorPath = $logPath + '.error.txt'
+              if (Test-Path -LiteralPath $errorPath) { Get-Content -LiteralPath $errorPath }
+              throw ('EXE self-tests failed with exit code ' + $process.ExitCode)
+          }
+          if (-not (Test-Path -LiteralPath $logPath -PathType Leaf)) { throw 'EXE self-test log is missing.' }
+          Get-Content -LiteralPath $logPath
+      - name: Check desktop source and compiled resources without execution
+        shell: powershell
+        run: |
+          $exePath = Join-Path $env:RUNNER_TEMP 'tunassist-preview\output\TunAssist.exe'
+          .\desktop\tests\Desktop.Safety.Tests.ps1 -ExecutablePath $exePath
+      - name: Optionally render a sample-data preview
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.render_demo }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $previewRoot = Join-Path $env:RUNNER_TEMP 'tunassist-preview'
+          $exePath = Join-Path $previewRoot 'output\TunAssist.exe'
+          $pngPath = Join-Path $previewRoot 'sample-demo.png'
+          $process = Start-Process -FilePath $exePath -ArgumentList ('--render-demo "{0}"' -f $pngPath) -WindowStyle Hidden -PassThru -Wait
+          if ($process.ExitCode -ne 0) {
+              $errorPath = $pngPath + '.error.txt'
+              if (Test-Path -LiteralPath $errorPath) { Get-Content -LiteralPath $errorPath }
+              throw ('Sample render failed with exit code ' + $process.ExitCode)
+          }
+          if (-not (Test-Path -LiteralPath $pngPath -PathType Leaf)) { throw 'Sample PNG is missing.' }
+          Write-Host 'Sample-data PNG created in runner temporary storage.'

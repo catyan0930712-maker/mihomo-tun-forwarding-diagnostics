@@ -1,0 +1,12 @@
+*.log
+*.bak
+*.tmp
+*.zip
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+Snapshots/
+*.private.json
+outputs/
+build/
